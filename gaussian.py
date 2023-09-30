@@ -12,10 +12,10 @@ def main():
     if args.file:
         n, coeff, const = io.readFile(args.file)
         
-    sol = [0 for i in range(len(const))]
+    sol = [0 for i in range(n)]
     
     if args.spp:
-        ind = [i for i in range(len(coeff))]
+        ind = [i for i in range(n)]
         
         coeff, const, ind = spp.SPPFwdElimination(coeff, const, ind, n)
         sol = spp.SPPBackSubst(coeff, const, sol, ind, n)

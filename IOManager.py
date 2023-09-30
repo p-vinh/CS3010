@@ -1,3 +1,4 @@
+# Description: This file contains functions to read input and save output
 def readFile(file):
     try:
         coeff = []
@@ -21,5 +22,5 @@ def saveOutput(fileName, sol):
         for i in range(len(sol)):
             if abs(sol[i]) < 1e-10: # Handle negative zero
                 sol[i] = 0
-            f.write("%0.2f\n" %(sol[i]))
+            f.write("{:.20g}\n".format(sol[i]))
     print("Output saved to %s" %(fileName))
