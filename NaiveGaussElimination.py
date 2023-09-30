@@ -18,4 +18,6 @@ def BackSubst(coeff, const, sol, n):
         for j in range(i+1, n):
             sumC = sumC - coeff[i][j] * sol[j]
         sol[i] = sumC / coeff[i][i]
+        if sol[i] == -0.0: # Handle negative zero
+            sol[i] = 0.0
     return sol

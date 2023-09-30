@@ -42,5 +42,6 @@ def SPPBackSubst(coeff, const, sol, ind, n):
         for j in range(i+1, n):
             sumC = sumC - coeff[ind[i]][j] * sol[j]
         sol[i] = sumC / coeff[ind[i]][i]
-    
+        if sol[i] == -0.0: # Handle negative zero
+            sol[i] = 0.0
     return sol

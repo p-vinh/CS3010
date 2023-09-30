@@ -1,29 +1,32 @@
 import IOManager as io
-import argparse as ap
+import sys
 import NaiveGaussElimination as nge
-import ScaledPartialPivot as spp
+import ScaledPartialPivot
 
-def main():
-    parser = ap.ArgumentParser()
-    parser.add_argument('--spp', help="Scaled Partial Pivoting", action="store_true")
-    parser.add_argument('file', help="Input file name")
-    args = parser.parse_args()
+def main(): 
+    if len(sys.argv) < 2:
+        print("Usage: python gaussian.py [--spp] <input file>")
+        exit(1)
     
-    if args.file:
-        n, coeff, const = io.readFile(args.file)
-        
+    spp = False
+    name = sys.argv[-1]
+    n, coeff, const = io.readFile(name)
+    
+    if len(sys.argv) == 3 and sys.argv[1] == "--spp":
+        spp = True
+    
     sol = [0 for i in range(n)]
     
-    if args.spp:
+    if spp:
         ind = [i for i in range(n)]
         
-        coeff, const, ind = spp.SPPFwdElimination(coeff, const, ind, n)
-        sol = spp.SPPBackSubst(coeff, const, sol, ind, n)
+        coeff, const, ind = ScaledPartialPivot.SPPFwdElimination(coeff, const, ind, n)
+        sol = ScaledPartialPivot.SPPBackSubst(coeff, const, sol, ind, n)
     else:
         coeff, const = nge.FwdElimination(coeff, const, n)
         sol = nge.BackSubst(coeff, const, sol, n)
-    name = args.file.split(".").pop(1).split("\\")
-    io.saveOutput(name[1] + ".sol", sol)
+    name = name.replace(".lin", ".sol")
+    io.saveOutput(name, sol)
 
 
 if __name__ == '__main__':

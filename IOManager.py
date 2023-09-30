@@ -17,10 +17,8 @@ def readFile(file):
     return n, coeff, const
 
 def saveOutput(fileName, sol):
-    with open(fileName, 'a') as f:
+    with open(fileName, 'w') as f:
         for i in range(len(sol)):
-            if abs(sol[i]) < 1e-10: # Handle negative zero
-                sol[i] = 0
             f.write("{:.15g} ".format(sol[i]))
         f.write("\n")
     print("Output saved to %s" %(fileName))
