@@ -18,9 +18,9 @@ def readFile(file):
 
 def saveOutput(fileName, sol):
     with open(fileName, 'a') as f:
-        f.write("\n")
         for i in range(len(sol)):
             if abs(sol[i]) < 1e-10: # Handle negative zero
                 sol[i] = 0
-            f.write("{:.20g}\n".format(sol[i]))
+            f.write("{:.15g} ".format(sol[i]))
+        f.write("\n")
     print("Output saved to %s" %(fileName))

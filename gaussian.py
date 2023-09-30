@@ -22,7 +22,8 @@ def main():
     else:
         coeff, const = nge.FwdElimination(coeff, const, n)
         sol = nge.BackSubst(coeff, const, sol, n)
-    io.saveOutput("sys1.sol", sol)
+    name = args.file.split(".").pop(1).split("\\")
+    io.saveOutput(name[1] + ".sol", sol)
 
 
 if __name__ == '__main__':
