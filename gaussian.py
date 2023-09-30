@@ -13,13 +13,11 @@ def main():
     sol = [0 for i in range(len(const))]
      
     if args.spp:
-        print("Using Scaled Partial Pivoting")
         ind = [i for i in range(len(coeff))]
         
         coeff, const, ind = spp.SPPFwdElimination(coeff, const, ind, n)
         sol = spp.SPPBackSubst(coeff, const, sol, ind, n)
     else:
-        print("Using Naive Gauss Elimination")
         coeff, const = nge.FwdElimination(coeff, const, n)
         sol = nge.BackSubst(coeff, const, sol, n)
     io.saveOutput("sys1.sol", sol)
