@@ -16,7 +16,8 @@ def readFile(file):
     return n, coeff, const
 
 def saveOutput(fileName, sol):
-    with open(fileName, 'w') as f:
+    with open(fileName, 'a') as f:
+        f.write("\n")
         for i in range(len(sol)):
             if abs(sol[i]) < 1e-10: # Handle negative zero
                 sol[i] = 0

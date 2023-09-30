@@ -6,14 +6,11 @@ import ScaledPartialPivot as spp
 def main():
     parser = ap.ArgumentParser()
     parser.add_argument('--spp', help="Scaled Partial Pivoting", action="store_true")
-    parser.add_argument('--file', help="Input file name")
+    parser.add_argument('file', help="Input file name")
     args = parser.parse_args()
     
     if args.file:
         n, coeff, const = io.readFile(args.file)
-    else:
-        print("Input file not specified!")
-        exit(0)
         
     sol = [0 for i in range(len(const))]
     
