@@ -31,19 +31,19 @@ def bisect(func, a, b, n, maxiter=10000, tol=1e-23):
     print("Root not found in %d iterations" %(maxiter))
     return c
 
-def newton(func, dfunc, x0, n, maxiter=10000, tol=1e-23, delta=1e-23):
-    fx = f(func, n, x0)
+def newton(func, dfunc, x, n, maxiter=10000, tol=1e-23, delta=1e-23):
+    fx = f(func, n, x)
     x = 0
     
     for i in range(maxiter):
-        fd = f(dfunc, n-1, x0)
+        fd = f(dfunc, n-1, x)
         
         if abs(fd) < delta:
             print("Small derivative")
-            return x0
+            return x
         
         d = fx / fd
-        x = x0 - d
+        x = x - d
         fx = f(func, n, x)
         
         if abs(d) < tol:
@@ -53,9 +53,35 @@ def newton(func, dfunc, x0, n, maxiter=10000, tol=1e-23, delta=1e-23):
     print("Max iterations reached without convergence...")
     return x
         
-def secant(func, x0, x1, maxiter=10000, tol=1e-23):
+def secant(func, a, b, maxiter=10000, tol=1e-23):
+    fa = f(func, n, a)
+    fb = f(func, n, b)
     
+    if abs(fa) > abs(fb):
+        a, b = b, a
+        fa, fb = fb, fa
+    
+    for i in range(maxiter):
+        if abs(fa) > abs(fb):
+            a, b = b, a
+            fa, fb = fb, fa
+        
+        d = (b - a) / (fb - fa)
+        b = a
+        fb = fa
+        d = d * fa
+        
+        if abs(d) < tol:
+            print("Algorithm has converged after #{it} iterations!".format(it=i))
+            return a
+
+        a = a - d
+        fa = f(func, n, a)
     pass
+
+def hybrid(func, x0, x1, n, maxiter=10000, tol=1e-23):
+    c = bisect(func, x0, x1, n, 8, tol)
+    return newton(func, df(func, n), c, n, maxiter, tol)
 
 def f(func, n, x):
     result = 0
@@ -72,8 +98,8 @@ def df(func, n):
 
 def main():
     n, func = io.readFile("Assignment-2\input.pol")
-    print(bisect(func, 0, 1, n))
-    print(newton(func, df(func, n), 1, n))
+    print(hybrid(func, 0, 1, n, 10000, 1e-23))
+    # print(newton(func, df(func, n), 1, n, maxiter=100, tol=1e-5, delta=1e-23))
 
 if __name__ == "__main__":
     main()
