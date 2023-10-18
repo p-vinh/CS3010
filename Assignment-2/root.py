@@ -1,4 +1,3 @@
-import IOManager as io
 import argparse
 
 
@@ -38,8 +37,7 @@ def bisect(func, a, b, n, maxiter=10000, tol=IEE754_EPSILON):
 
 def newton(func, dfunc, x, n, maxiter=10000, tol=IEE754_EPSILON, delta=DELTA):
     fx = f(func, n, x)
-    x = 0
-    
+
     for i in range(maxiter):
         fd = f(dfunc, n-1, x)
         
@@ -144,7 +142,6 @@ def main():
     parser.add_argument("-maxIt", metavar="# of Max Iterations", type=int, default=10000)
     
     args = parser.parse_args()
-    print(args._get_args)
     
     if args.sec and args.initP is None and args.initP2 is None:
         print("Invalid number of arguments")
@@ -157,7 +154,7 @@ def main():
             print("Invalid Arguments")
             return -1
     
-    n, func = io.readFile(args.filename)
+    n, func = readFile(args.filename)
     
     if args.sec:
         x0 = args.initP
@@ -183,7 +180,7 @@ def main():
         output = bisect(func, x0, x1, n, args.maxIt)
     
     filename = args.filename.replace(".pol", ".sol")
-    io.saveOutput(filename, output)
+    saveOutput(filename, output)
     
 if __name__ == "__main__":
     main()
