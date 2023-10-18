@@ -1,13 +1,18 @@
 import IOManager as io
 import argparse
 
-def bisect(func, a, b, n, maxiter=10000, tol=1e-23):
+
+HYBRID_BISECTION_ITERATION = 8
+IEE754_EPSILON = 2 ** -23
+DELTA = 0.00001
+
+def bisect(func, a, b, n, maxiter=10000, tol=IEE754_EPSILON):
     fa = f(func, n, a)
     fb = f(func, n, b)
     
     if fa * fb >= 0:
         print("Inadequate values for a and b")
-        return [-1.0, -1, "Inadequate values for a and b"]
+        return [-1.0, 0, False]
     
     error = b - a
     c = 0
@@ -17,9 +22,9 @@ def bisect(func, a, b, n, maxiter=10000, tol=1e-23):
         c = a + error
         fc = f(func, n, c)
         
-        if error < tol or fc == 0:
+        if abs(error) < tol or fc == 0:
             print("Root found at %dth iteration" %(i))
-            return [c, i, "Root found at %dth iteration" %(i)]
+            return [c, i, True]
         
         if fa * fc < 0:
             b = c
@@ -29,9 +34,9 @@ def bisect(func, a, b, n, maxiter=10000, tol=1e-23):
             fa = fc
     
     print("Root not found in %d iterations" %(maxiter))
-    return [c, maxiter, "Root not found in %d iterations" %(maxiter)]
+    return [c, maxiter, False]
 
-def newton(func, dfunc, x, n, maxiter=10000, tol=1e-23, delta=1e-23):
+def newton(func, dfunc, x, n, maxiter=10000, tol=IEE754_EPSILON, delta=DELTA):
     fx = f(func, n, x)
     x = 0
     
@@ -40,7 +45,7 @@ def newton(func, dfunc, x, n, maxiter=10000, tol=1e-23, delta=1e-23):
         
         if abs(fd) < delta:
             print("Small derivative")
-            return x
+            return [x, i, False]
         
         d = fx / fd
         x = x - d
@@ -48,12 +53,12 @@ def newton(func, dfunc, x, n, maxiter=10000, tol=1e-23, delta=1e-23):
         
         if abs(d) < tol:
             print("Algorithm has converged after #{it} iterations!".format(it=i))
-            return x
+            return [x, i, True]
     
     print("Max iterations reached without convergence...")
-    return x
+    return [x, maxiter, False]
         
-def secant(func, a, b, n, maxiter=10000, tol=1e-23):
+def secant(func, a, b, n, maxiter=10000, tol=IEE754_EPSILON):
     fa = f(func, n, a)
     fb = f(func, n, b)
     
@@ -69,19 +74,30 @@ def secant(func, a, b, n, maxiter=10000, tol=1e-23):
         d = (b - a) / (fb - fa)
         b = a
         fb = fa
-        d = d * fa
+        d *= fa
         
         if abs(d) < tol:
             print("Algorithm has converged after #{it} iterations!".format(it=i))
-            return a
+            return [a, i, True]
 
         a = a - d
         fa = f(func, n, a)
-    pass
+        
+    print("Maximum number of iterations reached!")
+    return [a, maxiter, False]
 
-def hybrid(func, x0, x1, n, maxiter=10000, tol=1e-23):
-    c = bisect(func, x0, x1, n, 8, tol)
-    return newton(func, df(func, n), c, n, maxiter, tol)
+def hybrid(func, x0, x1, n, maxiter=10000, tol=IEE754_EPSILON):
+    iterationCounter = 0
+    root = 0
+
+    x, iterationCounter, _ = bisect(func, x0, x1, n, HYBRID_BISECTION_ITERATION)
+    newtIterationCounter = 0
+    if (iterationCounter < maxiter):
+        print("Switching to Newton Method")
+        root, newtIterationCounter, outcome = newton(func, df(func, n), x, n, maxiter - iterationCounter)
+    iterationCounter += newtIterationCounter
+    
+    return [root, iterationCounter, outcome]
 
 def f(func, n, x):
     result = 0
@@ -95,6 +111,22 @@ def df(func, n):
         result.append(func[n - i] * i)
     return result
 
+def readFile(file):
+    try:
+        with open(file, 'r') as f:
+            lines = f.readlines()
+            n = int(lines[0].strip())
+            func = [float(i) for i in lines[1].strip().split()]
+    except FileNotFoundError:
+        print("File not found!")
+        exit(0)
+    return n, func
+
+def saveOutput(fileName, sol):
+    with open(fileName, 'w') as f:
+        for i in sol: f.write(str(i) + " ")
+        f.write("\n")
+    print("Output saved to %s" %(fileName))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -131,16 +163,16 @@ def main():
         x0 = args.initP
         x1 = args.initP2
         print("Using Secant method")
-        print(secant(func, x0, x1, n, args.maxIt))
+        output = secant(func, x0, x1, n, args.maxIt)
     elif args.newt:
         x0 = args.initP
         print("Using Newton's method")
-        print(newton(func, df(func, n), x0, n, args.maxIt))
+        output = newton(func, df(func, n), x0, n, args.maxIt)
     elif args.hybrid:
         x0 = args.initP
         x1 = args.initP2
         print("Using hybrid method")
-        print(hybrid(func, x0, x1, n, args.maxIt))
+        output = hybrid(func, x0, x1, n, args.maxIt)
     else:
         if args.initP2 is None:
             print("Invalid number of arguments")
@@ -148,7 +180,10 @@ def main():
         x0 = args.initP
         x1 = args.initP2
         print("Using bisection method")
-        io.saveOutput(args.filename.split(".")[1]+".sol", bisect(func, x0, x1, n, args.maxIt))
+        output = bisect(func, x0, x1, n, args.maxIt)
+    
+    filename = args.filename.replace(".pol", ".sol")
+    io.saveOutput(filename, output)
     
 if __name__ == "__main__":
     main()
