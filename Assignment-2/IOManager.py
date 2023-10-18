@@ -12,7 +12,8 @@ def readFile(file):
 
 def saveOutput(fileName, sol):
     with open(fileName, 'w') as f:
-        for i in range(len(sol)):
-            f.write("{:.15g} ".format(sol[i]))
+        f.write(str(sol[0])) # Root
+        f.write(str(sol[1])) # Iterations
+        f.write(sol[2]) # Outcome
         f.write("\n")
     print("Output saved to %s" %(fileName))
