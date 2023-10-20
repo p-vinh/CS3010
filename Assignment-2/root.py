@@ -98,7 +98,7 @@ def hybrid(func, x0, x1, n, maxiter=10000, tol=IEE754_EPSILON):
     return [root, iterationCounter, outcome]
 
 def f(func, n, x):
-    result = 0
+    result = 0.0
     for i in range(n, -1, -1):
         result += func[n - i] * (x ** i)
     return result
@@ -182,11 +182,5 @@ def main():
     filename = args.filename.replace(".pol", ".sol")
     saveOutput(filename, output)
     
-
-
-def test():
-    n, func = readFile("input.pol")
-    newton(func, df(func, n), 0.5, n, 10000)
 if __name__ == "__main__":
-    # main()
-    test()
+    main()
