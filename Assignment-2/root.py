@@ -3,7 +3,7 @@ import argparse
 
 HYBRID_BISECTION_ITERATION = 8
 IEE754_EPSILON = 2 ** -23
-DELTA = 0.00001
+DELTA = 2 ** -23
 
 def bisect(func, a, b, n, maxiter=10000, tol=IEE754_EPSILON):
     fa = f(func, n, a)
@@ -182,5 +182,11 @@ def main():
     filename = args.filename.replace(".pol", ".sol")
     saveOutput(filename, output)
     
+
+
+def test():
+    n, func = readFile("input.pol")
+    newton(func, df(func, n), 0.5, n, 10000)
 if __name__ == "__main__":
-    main()
+    # main()
+    test()
