@@ -2,8 +2,8 @@ import argparse
 
 
 HYBRID_BISECTION_ITERATION = 8
-IEE754_EPSILON = 2 ** -23
-DELTA = 2 ** -23
+IEE754_EPSILON = 2e-23
+DELTA = 2e-23
 
 def bisect(func, a, b, n, maxiter=10000, tol=IEE754_EPSILON):
     fa = f(func, n, a)
@@ -21,7 +21,7 @@ def bisect(func, a, b, n, maxiter=10000, tol=IEE754_EPSILON):
         c = a + error
         fc = f(func, n, c)
         
-        if abs(error) < tol or fc == 0:
+        if (abs(error) < tol) or fc == 0:
             print("Root found at %dth iteration" %(i))
             return [c, i, True]
         
@@ -48,7 +48,7 @@ def newton(func, dfunc, x, n, maxiter=10000, tol=IEE754_EPSILON, delta=DELTA):
         d = fx / fd
         x = x - d
         fx = f(func, n, x)
-        
+
         if abs(d) < tol:
             print("Algorithm has converged after #{it} iterations!".format(it=i))
             return [x, i, True]
