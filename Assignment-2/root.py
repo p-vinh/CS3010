@@ -99,8 +99,8 @@ def hybrid(func, x0, x1, n, maxiter=10000, tol=IEE754_EPSILON):
 
 def f(func, n, x):
     result = 0.0
-    for i in range(n, -1, -1):
-        result += func[n - i] * (x ** i)
+    for i in range(0, len(func)):
+        result += func[i] * (x ** (len(func)-1-i))
     return result
 
 def df(func, n):
